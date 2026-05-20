@@ -1,0 +1,35 @@
+{
+  "name": "los-angeles-energy-water-usage-api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@pothos/core": "^4.5.0",
+    "@pothos/plugin-prisma": "^4.5.0",
+    "@pothos/plugin-relay": "^4.4.0",
+    "@prisma/client": "^6.6.0",
+    "graphql": "^16.11.0",
+    "graphql-yoga": "^5.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "prisma": "^6.6.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0",
+    "graphql-request": "^7.1.0"
+  }
+}
