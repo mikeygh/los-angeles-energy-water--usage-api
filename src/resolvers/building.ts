@@ -1,4 +1,3 @@
-import { GraphQLError } from "graphql";
 import { builder } from "../schema/builder.js";
 import { prisma } from "../db.js";
 
@@ -10,16 +9,10 @@ builder.queryField("building", (t) =>
     },
     nullable: true,
     resolve: async (query, _parent, { id }) => {
-      const building = await prisma.building.findUnique({
+      return prisma.building.findUnique({
         ...query,
         where: { id },
       });
-      if (!building) {
-        throw new GraphQLError("Building not found", {
-          extensions: { code: "BUILDING_NOT_FOUND" },
-        });
-      }
-      return building;
     },
   })
 );

@@ -38,7 +38,6 @@ builder.queryField("buildings", (t) =>
           where.name = { contains: filter.nameContains, mode: "insensitive" };
         }
         if (filter.year || filter.minEnergyScore != null || filter.maxEnergyScore != null) {
-          where.usageRecords = {};
           const recordFilters: Prisma.UsageRecordWhereInput[] = [];
           if (filter.year) {
             if (filter.year !== 2014 && filter.year !== 2015) {
