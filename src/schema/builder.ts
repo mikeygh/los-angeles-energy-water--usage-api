@@ -23,3 +23,5 @@ export const builder = new SchemaBuilder<PothosTypes>({
     cursorType: "String",
   },
 });
+
+builder.queryType({});
