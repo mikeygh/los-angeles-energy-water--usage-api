@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Building {
+  id              Int            @id
+  name            String
+  department      String
+  squareFootage   Int?
+  locationAddress String?
+  locationCity    String?
+  locationState   String?
+  locationZip     String?
+  latitude        Float?
+  longitude       Float?
+  theGeom         String?
+
+  usageRecords    UsageRecord[]
+}
+
+model UsageRecord {
+  id                                  Int      @id @default(autoincrement())
+  buildingId                          Int
+  year                                Int
+  energyStarScore                     Int?
+  siteEuiKbtuFt                       Float?
+  sourceEuiKbtuFt                     Float?
+  weatherNormalizedSiteEuiKbtuFt      Float?
+  weatherNormalizedSourceEuiKbtuFt    Float?
+  waterUseAllSourcesKGal              Float?
+  indoorWaterUseKGal                  Float?
+  indirectGhgEmissionsMetricTonsCo2e  Float?
+  directGhgEmissionsMetricTonsCo2e    Float?
+  totalGhgEmissionsMetricTonsCo2e     Float?
+  totalGhgEmissionsIntensityKgCo2eFt  Float?
+
+  building Building @relation(fields: [buildingId], references: [id])
+
+  @@unique([buildingId, year])
+}
