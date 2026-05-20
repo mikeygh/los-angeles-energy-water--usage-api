@@ -1,60 +1,17 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseRow } from "../src/data/parse.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 interface SocrataRow {
   data: unknown[][];
 }
 
-interface ParsedRow {
-  propertyId: number;
-  propertyName: string;
-  department: string;
-  year: number;
-  energyStarScore: number | null;
-  siteEuiKbtuFt: number | null;
-  waterUseKGal: number | null;
-  locationAddress: string | null;
-  latitude: number | null;
-  longitude: number | null;
-}
-
-function parseValue(v: unknown): number | null {
-  if (v === null || v === undefined || v === "") return null;
-  const n = Number(v);
-  return Number.isNaN(n) ? null : n;
-}
-
-function parseIntValue(v: unknown): number | null {
-  const n = parseValue(v);
-  return n !== null ? Math.round(n) : null;
-}
-
-function parseRow(row: unknown[]): ParsedRow {
-  const location = row[26] as unknown[];
-  let addressJson: Record<string, string> | null = null;
-  try {
-    if (location?.[0]) {
-      addressJson = JSON.parse(location[0] as string);
-    }
-  } catch { /* ignore */ }
-
-  return {
-    propertyId: Number(row[13]),
-    propertyName: (row[16] as string) || "",
-    department: (row[15] as string) || "",
-    year: new Date(row[14] as string).getFullYear(),
-    energyStarScore: parseIntValue(row[11]),
-    siteEuiKbtuFt: parseValue(row[25]),
-    waterUseKGal: parseValue(row[21]),
-    locationAddress: addressJson?.address ?? null,
-    latitude: location?.[1] != null ? Number(location[1]) : null,
-    longitude: location?.[2] != null ? Number(location[2]) : null,
-  };
-}
-
 describe("rows.json parser", () => {
-  const filePath = join(import.meta.dirname, "..", "rows.json");
+  const filePath = join(__dirname, "..", "rows.json");
   const raw = JSON.parse(readFileSync(filePath, "utf-8")) as SocrataRow;
 
   it("parses all data rows", () => {
@@ -69,8 +26,8 @@ describe("rows.json parser", () => {
     const parsed = parseRow(row!);
     expect(parsed.propertyId).toBe(3935383);
     expect(parsed.department).toBe("Libraries:");
-    expect(parsed.year).toBe(2014);
-    expect(parsed.siteEuiKbtuFt).toBeCloseTo(47.7);
+    expect(new Date(parsed.yearEnding).getFullYear()).toBe(2014);
+    expect(parsed.siteEui).toBeCloseTo(47.7);
     expect(parsed.waterUseKGal).toBeCloseTo(287.8);
     expect(parsed.latitude).toBeCloseTo(34.050589);
     expect(parsed.longitude).toBeCloseTo(-118.197849);
